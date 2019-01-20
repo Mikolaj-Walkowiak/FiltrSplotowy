@@ -5,8 +5,60 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FiltrSplotowy"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+       Title="Filtr splotowy" Height="547.577" Width="1216.709" ResizeMode="CanMinimize">
     <Grid>
-        
+
+
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.504,1.1" StartPoint="0.504,0.003">
+                <GradientStop Color="Beige"  Offset="0"/>
+                <GradientStop Color="Navy" Offset="1.0"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="99*"/>
+            <ColumnDefinition Width="143*"/>
+            <ColumnDefinition Width="309*"/>
+            <ColumnDefinition Width="644*"/>
+        </Grid.ColumnDefinitions>
+
+
+        <Button x:Name="doIt" Content="Start" HorizontalAlignment="Left" Margin="69.536,10,0,0" VerticalAlignment="Top" Width="564" IsEnabled="False" Click="doIt_Click" Height="21" Grid.Column="3"/>
+        <Button x:Name="zapiszObraz" Content="Zapisz jako png" HorizontalAlignment="Left" Margin="108.536,481,0,0" VerticalAlignment="Top" Width="118" Click="zapiszObraz_Click" IsEnabled="False" Grid.Column="3"/>
+        <Button x:Name="stworzObraz" Content="Stwórz obraz" HorizontalAlignment="Left" Margin="10,78,0,0" VerticalAlignment="Top" Width="185" Click="stworzObraz_Click" IsEnabled="False" Grid.ColumnSpan="2"/>
+        <Button x:Name="zapiszBinarny" Content="Zapisz binarnie" HorizontalAlignment="Left" Margin="161,481,0,0" VerticalAlignment="Top" Width="140" IsEnabled="False" Click="zapiszBinarny_Click" Grid.Column="2"/>
+        <Button Content="Wybierz plik" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="185" Click="wybierzPlik_Click" Grid.ColumnSpan="2"/>
+        <Button x:Name="zapiszTekst" Content="Zapisz jako txt" HorizontalAlignment="Left" Margin="306,481,0,0" VerticalAlignment="Top" Width="107" Click="zapiszTekst_Click" IsEnabled="False" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <ProgressBar x:Name="PB" HorizontalAlignment="Left" Height="29" Margin="70,37,0,0" VerticalAlignment="Top" Width="564" Maximum="400" Visibility="Hidden" Value="0" Minimum="0" Grid.Column="3"/>
+        <TextBlock HorizontalAlignment="Left" Margin="38,14,0,0" TextWrapping="Wrap" Text="Ilość iteracji:" VerticalAlignment="Top" Grid.Column="2"/>
+        <TextBox x:Name="Iteracje" HorizontalAlignment="Left" Height="16" Margin="110,12,0,0" TextWrapping="Wrap" Text="500" VerticalAlignment="Top" Width="92" PreviewTextInput="Sprawdz_liczby" Grid.Column="2"/>
+        <TextBlock HorizontalAlignment="Left" Margin="207,13,0,0" TextWrapping="Wrap" Text="Ilość wątków:" VerticalAlignment="Top" Grid.Column="2"/>
+        <TextBox x:Name="watki" HorizontalAlignment="Left" Height="16" Margin="282,13,0,0" TextWrapping="Wrap" Text="8" VerticalAlignment="Top" Width="92" PreviewTextInput="Sprawdz_liczby" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <CheckBox x:Name="Szachownica" Content="Stwórz szachownicę o podanej liczbie pól:" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Width="249" Checked="Szachownica_Checked" Unchecked="Szachownica_Unchecked"/>
+        <TextBox x:Name="BoxSzachownica" Height="17" Margin="10,35,0,0" TextWrapping="Wrap" Text="8" VerticalAlignment="Top" IsEnabled="False" PreviewTextInput="Sprawdz_liczby" Grid.Column="2" HorizontalAlignment="Left" Width="33"/>
+        <Image x:Name="imageORG" HorizontalAlignment="Left" Height="350" Margin="10,124,0,0" VerticalAlignment="Top" Width="375" Grid.ColumnSpan="3"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="10,103,0,0" TextWrapping="Wrap" Text="Oryginał:" VerticalAlignment="Top"/>
+
+        <Image x:Name="imageNewSyn" HorizontalAlignment="Left" Height="350" Margin="161,126,0,0" VerticalAlignment="Top" Width="375" Visibility="Visible" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <Image x:Name="imageNewAsyn" HorizontalAlignment="Left" Height="350" Margin="161,126,0,0" VerticalAlignment="Top" Width="375" Visibility="Visible" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="161,105,0,0" TextWrapping="Wrap" Text="Obraz końcowy:" VerticalAlignment="Top" Grid.Column="2"/>
+        <Button x:Name="Ktory" Content="Synchroniczny" HorizontalAlignment="Left" Margin="251,103,0,0" VerticalAlignment="Top" Width="100" Click="Ktory_Click" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <Label Content="OUTPUT:" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="3" Margin="256,106,0,0" Width="76"/>
+        <TextBox x:Name="OUTPUT" HorizontalAlignment="Left" Height="360" Margin="256,141,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="388" IsReadOnly="True" Grid.Column="3"/>
+        <Label Content="na kwadracie o boku:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,52,0,0" Grid.ColumnSpan="2" Width="128"/>
+        <TextBox Name="Wymiary" HorizontalAlignment="Left" Height="16" TextWrapping="Wrap" Text="1024" VerticalAlignment="Top" Width="107" Grid.Column="1" Margin="38,57,0,0" PreviewTextInput="Sprawdz_liczby"/>
+        <Label Content="Technologia" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="2" Margin="65,32,0,0" Width="75"/>
+        <ComboBox Name="Wybor" HorizontalAlignment="Left" VerticalAlignment="Top" Width="229" Grid.Column="2" Margin="145,35,0,0" Grid.ColumnSpan="2">
+
+            <ComboBoxItem IsSelected="True">Synchronizowane Dzielenie</ComboBoxItem>
+            <ComboBoxItem>Dzielenie samodzielne</ComboBoxItem>
+            <ComboBoxItem>Sync For</ComboBoxItem>
+
+
+
+
+        </ComboBox>
+        <CheckBox Content="Wyłącz 1 wątkowość" Name="singleThreaded" IsChecked="True" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="2" Margin="69,63,0,0"/>
     </Grid>
 </Window>
