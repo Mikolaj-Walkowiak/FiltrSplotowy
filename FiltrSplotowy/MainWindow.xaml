@@ -60,5 +60,7 @@
 
         </ComboBox>
         <CheckBox Content="Wyłącz 1 wątkowość" Name="singleThreaded" IsChecked="True" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="2" Margin="69,63,0,0"/>
+        <Label Content="Ilość testów" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="2" Margin="207,55,0,0" Width="81"/>
+        <TextBox Name="doSredniej" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="92" Grid.Column="2" Margin="282,56,0,0"/>
     </Grid>
 </Window>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -473,20 +474,28 @@ namespace FiltrSplotowy
                         PB.Visibility = Visibility.Visible;
 
                         Stopwatch sw = new Stopwatch();
-                        sw.Start();
+                        int ile = Int32.Parse(doSredniej.Text);
+                        long[] tablica = new long[ile];
                         MyImage przerobiony = obraz;
                         if (singleThreaded.IsChecked == false)
                         {
                             
                             //synchroniczny
-                            for (int i = 0; i < iteracje; i++)
+                            for (int j = 0; j < ile; ++j)
                             {
-                                przerobiony = przerobiony.convolution();
+                                sw.Restart();
+                                przerobiony = obraz;
+                                for (int i = 0; i < iteracje; i++)
+                                {
+                                    przerobiony = przerobiony.convolution();
+                                }
+                                sw.Stop();
+                                tablica[j] = sw.ElapsedMilliseconds;
                             }
                         }
 
                         //ez
-                        sw.Stop();
+                        
                         this.Dispatcher.Invoke(() =>
                         {
                             PB.Value = 1;
@@ -534,7 +543,14 @@ namespace FiltrSplotowy
                         fin = sb.ToString();
 
                         imageNewSyn.Source = BitmapToImageSource(ImagetoBitMap(przerobiony));
-                        OUTPUT.Text += '\n' + "Synchroniczna: " + sw.Elapsed.TotalSeconds + "s.";
+                        
+
+                        var srednia = tablica.Average();
+                        double sumOfSquaresOfDifferences = tablica.Select(val => (val - srednia) * (val - srednia)).Sum();
+                        double odchylenie = Math.Sqrt(sumOfSquaresOfDifferences / tablica.Length);
+                        srednia = Math.Round(srednia / 1000, 3);
+                        odchylenie = Math.Round(odchylenie / 1000, 3);
+                        OUTPUT.Text += '\n' + "Synchroniczna: \n" +"Sredni czas: " + srednia + "s.\nOdchylenie: " + odchylenie + "s \n";
 
 
                         //wersja asynchroniczna
@@ -542,36 +558,40 @@ namespace FiltrSplotowy
                         Wartosci = obraz.Values;
 
                         /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        if (Wybor.SelectedIndex == 0)
+                        for (int k = 0; k < ile; ++k)
                         {
-                            sw.Restart();
-                            synchronised(iteracje, threadcount, height, width);
-                            sw.Stop();
-                        }
-                        else if (Wybor.SelectedIndex == 1)
-                        {
-                            sw.Restart();
-                            bozeJakieToJestTrudne(height, width, iteracje);
-                            sw.Stop();
-
-                            int counter = 0;
-                            for (int i = 0; i < WartosciAsync.Length; ++i)
+                            if (Wybor.SelectedIndex == 0)
                             {
-                                for (int j = 0; j < WartosciAsync[i].Length; ++j)
+                                sw.Restart();
+                                synchronised(iteracje, threadcount, height, width);
+                                sw.Stop();
+                            }
+                            else if (Wybor.SelectedIndex == 1)
+                            {
+                                sw.Restart();
+                                bozeJakieToJestTrudne(height, width, iteracje);
+                                sw.Stop();
+
+                                int counter = 0;
+                                for (int i = 0; i < WartosciAsync.Length; ++i)
                                 {
-                                    Wartosci[counter] = WartosciAsync[i][j];
-                                    counter++;
+                                    for (int j = 0; j < WartosciAsync[i].Length; ++j)
+                                    {
+                                        Wartosci[counter] = WartosciAsync[i][j];
+                                        counter++;
+                                    }
                                 }
+
+                            }
+                            else if (Wybor.SelectedIndex == 2)
+                            {
+                                sw.Restart();
+                                syncFor(iteracje, height, width);
+                                sw.Stop();
                             }
 
+                            tablica[k] = sw.ElapsedMilliseconds;
                         }
-                        else if (Wybor.SelectedIndex == 2)
-                        {
-                            sw.Restart();
-                            syncFor(iteracje, height, width);
-                            sw.Stop();
-                        }
-
                         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                         przerobiony.Values = Wartosci;
@@ -616,7 +636,12 @@ namespace FiltrSplotowy
                         imageNewAsyn.Source = BitmapToImageSource(ImagetoBitMap(przerobiony));
                         //obraz = przerobiony; //zakomentowany nie zapamietuje stanu przy kolejnych operacjach
 
-                        OUTPUT.Text += '\n' + "Asynchroniczna: " + sw.Elapsed.TotalSeconds + "s.";
+                        srednia = tablica.Average();
+                        sumOfSquaresOfDifferences = tablica.Select(val => (val - srednia) * (val - srednia)).Sum();
+                        odchylenie = Math.Sqrt(sumOfSquaresOfDifferences / tablica.Length);
+                        srednia = Math.Round(srednia / 1000, 3);
+                        odchylenie = Math.Round(odchylenie / 1000, 3);
+                        OUTPUT.Text += '\n' + "Asynchroniczna: \n" + "Sredni czas: " + srednia + "s.\nOdchylenie: " + odchylenie + "s \n";
                         PB.Visibility = Visibility.Hidden;
                         PB.Value = 0;
                         zapiszBinarny.IsEnabled = true;
